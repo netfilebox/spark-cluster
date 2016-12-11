@@ -43,7 +43,8 @@ $masterScript = <<SCRIPT
   # set SPARK_MASTER_HOST - allows slave connections to master on PORT 7077 
   CONF_DIR=/opt/spark/conf
   IP=$(ifconfig eth1|grep 'inet '|awk '{print $2}')
-  sed "s/# \- SPARK_MASTER_HOST.*/SPARK_MASTER_HOST=$IP/" $CONF_DIR/spark-env.sh.template > $CONF_DIR/spark-env.sh
+  sed "s/# \- SPARK_MASTER_HOST.*/SPARK_MASTER_HOST=$IP/" $CONF_DIR/spark-env.sh.template > $CONF_DIR/spark-env.1
+  sed "s/# \- SPARK_LOCAL_IP.*/SPARK_LOCAL_IP=$IP/" $CONF_DIR/spark-env.1 > $CONF_DIR/spark-env.sh
   chmod 755 $CONF_DIR/spark-env.sh
 SCRIPT
 
@@ -77,7 +78,7 @@ Vagrant.configure(2) do |config|
      end 
      # expose port 8080 in VM to HOST for Spark UI 
      node.vm.network "forwarded_port", guest: 8080, host: 8080
-     node.vm.network "forwarded_port", guest: 4040, host: 4040
+     #node.vm.network "forwarded_port", guest: 4040, host: 4040
      node.vm.hostname = "spark-master"
      node.vm.provision "shell", inline: $masterScript
   end
